@@ -1,3 +1,3 @@
-require 'collectors/collector'
-require 'collectors/csv_collector'
-require 'collectors/plot_collector'
+require 'devs/models/collectors/collector'
+require 'devs/models/collectors/csv_collector'
+require 'devs/models/collectors/plot_collector'

@@ -1,4 +1,4 @@
 require 'devs'
-require 'models/version'
-require 'models/collectors'
-require 'models/generators'
+require 'devs/models/version'
+require 'devs/models/collectors'
+require 'devs/models/generators'
