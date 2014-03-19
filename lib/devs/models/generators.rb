@@ -1,2 +1,2 @@
-require 'devs/models/generators/random_generator'
-require 'devs/models/generators/sequence_generator'
+require 'generators/random_generator'
+require 'generators/sequence_generator'
