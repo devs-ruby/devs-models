@@ -11,7 +11,7 @@ module DEVS
           @max = max
           @step = step
 
-          @sigma = 1
+          @sigma = 0
         end
 
         def output

@@ -4,29 +4,18 @@ module DEVS
       class Collector < DEVS::AtomicModel
         def initialize
           super()
-          @results = {}
+          @results = Hash.new { |hash, key| hash[key] = [] }
+          @sigma = DEVS::INFINITY
         end
 
         external_transition do |messages|
           messages.each do |message|
             value, port = *message
-
-            if @results.has_key?(message.port.name)
-              ary = @results[port.name]
-            else
-              ary = []
-              @results[port.name] = ary
-            end
-
-            ary << [@time, value] unless value.nil?
+            @results[port.name] << [@time, value] unless value.nil?
           end
-
-          self.sigma = 0
         end
 
-        internal_transition { self.sigma = DEVS::INFINITY }
-
-        time_advance { self.sigma }
+        time_advance { @sigma }
       end
     end
   end

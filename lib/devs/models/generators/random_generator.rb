@@ -12,7 +12,7 @@ module DEVS
 
           @random = Random.new(seed)
 
-          self.sigma = 1
+          self.sigma = 0
         end
 
         internal_transition { self.sigma = (@min_step + @random.rand * @max_step).round }
