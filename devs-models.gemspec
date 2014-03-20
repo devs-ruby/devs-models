@@ -23,6 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('yard', '~> 0.8')
   spec.add_development_dependency('pry', '~> 0.9')
 
+  spec.add_dependency('gnuplot', '~> 2.6')
   spec.add_dependency('devs', '~> 0.5')
 
   spec.required_ruby_version = '>= 1.9.2'
