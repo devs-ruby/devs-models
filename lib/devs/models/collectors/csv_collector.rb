@@ -3,7 +3,7 @@ require 'csv'
 module DEVS
   module Models
     module Collectors
-      class CSVCollector < Collector
+      class CSVCollector < HashCollector
         post_simulation_hook do
           content = CSV.generate do |csv|
             columns = []

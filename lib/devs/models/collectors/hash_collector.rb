@@ -1,7 +1,7 @@
 module DEVS
   module Models
     module Collectors
-      class Collector < DEVS::AtomicModel
+      class HashCollector < DEVS::AtomicModel
         def initialize
           super()
           @results = Hash.new { |hash, key| hash[key] = [] }

@@ -1,3 +1,6 @@
-require 'devs/models/collectors/collector'
+require 'devs/models/collectors/hash_collector'
+require 'devs/models/collectors/tempfile_collector'
+require 'devs/models/collectors/async_tempfile_collector'
+require 'devs/models/collectors/dataset_collector'
 require 'devs/models/collectors/csv_collector'
 require 'devs/models/collectors/plot_collector'

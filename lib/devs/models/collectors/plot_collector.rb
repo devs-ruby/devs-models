@@ -3,7 +3,7 @@ require 'gnuplot'
 module DEVS
   module Models
     module Collectors
-      class PlotCollector < Collector
+      class PlotCollector < HashCollector
         def initialize(opts={})
           super()
 
