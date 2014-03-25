@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module DEVS
   module Models
     module Collectors

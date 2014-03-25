@@ -1,3 +1,5 @@
+require 'tempfile'
+
 module DEVS
   module Models
     module Collectors
@@ -5,9 +7,10 @@ module DEVS
         def initialize(opts={})
           super()
           @opts = {
-            output: "#{self.name}_dataset"
-            interleaved: true,
-            column_spaces: 30
+            output: "#{self.name}_dataset",
+            interleaved: false,
+            column_spaces: 30,
+            ports_as_separate_datasets: true
           }.merge(opts)
 
           if @opts[:interleaved]
@@ -23,25 +26,25 @@ module DEVS
         def external_transition(messages)
           ports = input_ports.map(&:name)
           if @opts[:interleaved]
-            hash = Hash.new { |hash, key| hash[key] = 'NaN' }
+            spaces = @opts[:column_spaces]
+            hash = {}
             messages.each do |message|
               payload, port = *message
-              hash[port] = payload
+              hash[port.name] = payload
             end
-            spaces = @opts[:column_spaces]
             ports.each do |port|
-              @file.printf("%-#{spaces}s %-#{spaces}s # %s\n", self.time, hash[port], port)
+              @file.printf("%-#{spaces}s %-#{spaces}s # %s\n", self.time, hash[port] || 'NaN', port)
             end
           else
             messages.each do |message|
               payload, port = *message
-              unless value.nil?
+              unless payload.nil?
                 spaces = @opts[:column_spaces]
                 if payload.is_a?(Array)
                   strfmt = (["%-#{spaces}s"] * (payload.count + 1)).join(' ')
-                  @tempfile[port.name].printf("#{strfmt}\n", self.time, *payload)
+                  @tempfiles[port.name].printf("#{strfmt}\n", self.time, *payload)
                 else
-                  @tempfile[port.name].printf("%-#{spaces}s %-#{spaces}s\n", self.time, payload)
+                  @tempfiles[port.name].printf("%-#{spaces}s %-#{spaces}s\n", self.time, payload)
                 end
               end
             end
@@ -52,14 +55,13 @@ module DEVS
           if @opts[:interleaved]
             @file.close
           else
-            File.new(@opts[:output], 'w+') do |file|
+            File.open(@opts[:output], 'w+') do |file|
               file.puts "# time - value"
               @tempfiles.each do |port, tempfile|
                 file.puts "# #{port} data set"
+                tempfile.rewind
                 IO.copy_stream(tempfile, file)
-
-                # insert an empty line to change dataset
-                file.print("\n\n")
+                file.print @opts[:ports_as_separate_datasets] ? "\n\n" : "\n"
 
                 # close tempfile
                 tempfile.close
