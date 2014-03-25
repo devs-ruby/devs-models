@@ -20,7 +20,7 @@ module DEVS
 
         def internal_transition
           @value += @step
-          @sigma = if @value >= @max
+          @sigma = if @value > @max
             DEVS::INFINITY
           else
             @step
