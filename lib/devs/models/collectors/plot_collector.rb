@@ -8,16 +8,18 @@ module DEVS
           super()
 
           @opts = {
-            terminal: 'postscript eps color "Times-Roman" 12',
+            terminal: 'postscript eps "Times-Roman" 12',
             output: 'plot.eps',
             style: 'data lines',
             title: self.name,
             ylabel: 'events',
             xlabel: 'time'
           }.merge(opts)
+
+          DEVS::Hooks.subscribe(:post_simulation_hook, self, :plot)
         end
 
-        post_simulation_hook do
+        def plot
           Gnuplot.open do |gp|
             Gnuplot::Plot.new(gp) do |plot|
               plot.terminal @opts[:terminal]
