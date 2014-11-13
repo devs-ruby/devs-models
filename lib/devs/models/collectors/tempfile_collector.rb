@@ -7,6 +7,7 @@ module DEVS
         def initialize
           super()
           @tempfile = Tempfile.new(self.name.to_s)
+          DEVS::Hooks.subscribe(:post_simulation_hook, self, :close)
         end
 
         def external_transition(messages)
@@ -18,7 +19,7 @@ module DEVS
           end
         end
 
-        def post_simulation_hook
+        def close
           @tempfile.close
           @tempfile.unlink
         end

@@ -16,6 +16,8 @@ module DEVS
           end
           @tempfile = tempfile
           @queue = queue
+
+          DEVS::Hooks.subscribe(:post_simulation_hook, self, :close)
         end
 
         def external_transition(messages)
@@ -27,7 +29,7 @@ module DEVS
           end
         end
 
-        def post_simulation_hook
+        def close
           @run = false
           @consumer.join
           @tempfile.close

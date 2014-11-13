@@ -21,6 +21,8 @@ module DEVS
               hash[key] = Tempfile.new("#{self.name}_#{key}")
             end
           end
+
+          DEVS::Hooks.subscribe(:post_simulation_hook, self, :close)
         end
 
         def external_transition(messages)
@@ -51,7 +53,7 @@ module DEVS
           end
         end
 
-        def post_simulation_hook
+        def close
           if @opts[:interleaved]
             @file.close
           else
