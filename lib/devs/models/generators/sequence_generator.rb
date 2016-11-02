@@ -2,33 +2,23 @@ module DEVS
   module Models
     module Generators
       class SequenceGenerator < DEVS::AtomicModel
-        def initialize(min = 1, max = 10, step = 1)
-          super()
+        attr_state :min, :step, default: 1
+        attr_state :max, default: 10
+        attr_state :sigma, default: 0
 
-          add_output_port :value
-
-          @value = min
-          @max = max
-          @step = step
-
-          @sigma = 0
-        end
+        output_port :value
 
         def output
-          post @value, :value
+          post @min, :value
         end
 
         def internal_transition
-          @value += @step
-          @sigma = if @value > @max
+          @min += @step
+          @sigma = if @min > @max
             DEVS::INFINITY
           else
             @step
           end
-        end
-
-        def time_advance
-          @sigma
         end
       end
     end

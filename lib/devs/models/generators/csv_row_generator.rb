@@ -1,20 +1,27 @@
 require 'csv'
-
 module DEVS
   module Models
     module Generators
+      # TODO attr_state
       class CSVRowGenerator < DEVS::AtomicModel
-        def initialize(input_file = 'csv_input.csv', col_sep = nil, step = 1)
-          super()
 
-          opts = col_sep.nil? ? nil : { col_sep: col_sep }
+        attr_state :sigma, default: 0
+        attr_state :input_file, :col_sep
+        attr_state :step, default: 1
+
+        output_port :row
+
+        def initialize(name)
+          super(name)
+          DEVS::Hooks.subscribe(:before_simulation_hook, self)
+        end
+
+        def notify(hook)
+          opts = @col_sep.nil? ? nil : { col_sep: @col_sep }
           File.open(input_file, 'r') do |file|
             @csv = CSV.parse(file.read, opts)
           end
           @csv.shift #headers
-
-          @step = step
-          self.sigma = 0
         end
 
         def internal_transition
@@ -25,7 +32,7 @@ module DEVS
           @last_row = @csv.shift
           unless @last_row.nil?
             @last_row.map! { |v| v.gsub(',', '.').to_f }
-            post(@last_row, output_ports.first)
+            post(@last_row, output_ports[:row])
           end
         end
       end

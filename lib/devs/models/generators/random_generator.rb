@@ -2,28 +2,22 @@ module DEVS
   module Models
     module Generators
       class RandomGenerator < DEVS::AtomicModel
-        def initialize(min = 0, max = 10, min_step = 1, max_step = 1, seed = Random.new_seed)
-          super()
 
-          @min = min
-          @max = max
-          @min_step = min_step
-          @max_step = max_step
+        attr_state :min, default: 0
+        attr_state :max, default: 10
+        attr_state :min_step, :max_step, default: 1
+        attr_state :sigma, default: 0
+        attr_state(:random) { Random.new(Random.new_seed) }
 
-          @random = Random.new(seed)
-
-          self.sigma = 0
+        def internal_transition
+          self.sigma = (@min_step + @random.rand * @max_step).round
         end
 
-        internal_transition { self.sigma = (@min_step + @random.rand * @max_step).round }
-
-        output do
+        def output
           messages_count = (1 + @random.rand * output_ports.count).round
-          selected_ports = output_ports.sample(messages_count)
+          selected_ports = output_port_names.sample(messages_count)
           selected_ports.each { |port| post((@min + @random.rand * @max).round, port) }
         end
-
-        time_advance { self.sigma }
       end
     end
   end

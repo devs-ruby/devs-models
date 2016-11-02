@@ -2,20 +2,13 @@ module DEVS
   module Models
     module Collectors
       class HashCollector < DEVS::AtomicModel
-        def initialize
-          super()
-          @results = Hash.new { |hash, key| hash[key] = [] }
-          @sigma = DEVS::INFINITY
-        end
+        attr_state(:results) { Hash.new { |hash, key| hash[key] = [] }}
 
-        external_transition do |messages|
-          messages.each do |message|
-            value, port = *message
+        def external_transition(messages)
+          messages.each do |port,value|
             @results[port.name] << [@time, value] unless value.nil?
           end
         end
-
-        time_advance { @sigma }
       end
     end
   end

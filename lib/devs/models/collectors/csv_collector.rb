@@ -4,12 +4,14 @@ module DEVS
   module Models
     module Collectors
       class CSVCollector < HashCollector
-        def initialize
-          super()
-          DEVS::Hooks.subscribe(:post_simulation_hook, self, :generate_csv!)
+        attr_state :output_file
+
+        def initialize(name = nil)
+          super(name)
+          DEVS::Hooks.subscribe(:after_simulation_hook, self)
         end
 
-        def generate_csv!
+        def notify(hook)
           content = CSV.generate do |csv|
             columns = []
             @results.keys.each { |column| columns << "time"; columns << column }
@@ -31,7 +33,7 @@ module DEVS
               csv << row
             end
           end
-          File.open("#{self.name}.csv", 'w') { |file| file.write(content) }
+          File.open(@output_file || "#{self.name}.csv", 'w') { |file| file.write(content) }
         end
       end
     end
